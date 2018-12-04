@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import Counter from './Counter';
+import { connect } from "react-redux";
 
 class CounterGroup extends Component {
   state = {
-            sum: 0,
-            counters: new Array(this.props.gpSize).fill(0).map(() => ({id: new Date().getTime() + Math.random(), count: 0})), 
-            version: 0
+            counters: new Array(this.props.gpSize).fill(0).map(() => ({id: new Date().getTime() + Math.random(), count: 0}))
           };
 
   updateSum = (delta) => {
-    this.state.sum += delta;
-    this.setState(this.state);
+    this.props.dispatch({
+      type: "UPDATE_SUM",
+      payload: delta
+    });
   };
 
   updateCount = (id, count) => {
@@ -31,10 +32,16 @@ class CounterGroup extends Component {
         {this.state.counters.map((counter) => 
           <Counter id = {counter.id} count = {counter.count} onUpdate = {this.updateCount} onUpdateSum = {this.updateSum} />
         )}
-        <span>Sum: {this.state.sum}</span>
+        <span>Sum: {this.props.sum}</span>
       </div>
     );
   }
 }
 
-export default CounterGroup;
+const mapStateToProps = state => ({
+  sum: state.sum
+});
+
+connect(mapStateToProps)(CounterGroup)
+
+export default connect(mapStateToProps)(CounterGroup)
